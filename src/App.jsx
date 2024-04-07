@@ -3,6 +3,10 @@ import { ethers } from "ethers";
 import ErrorMessage from "./ErrorMessage";
 import TxList from "./TxList";
 
+import TransactionsABI from "./utils/constants/TransactionsABI.json";
+
+const contractAddress = "0xBCEEe2AF0F7710C6E5e7F8F35AD8cDe8828E3C3a"; // Replace with your contract address
+
 const startPayment = async ({ setError, setTxs, ether, addr }) => {
   try {
     if (!window.ethereum)
@@ -11,11 +15,12 @@ const startPayment = async ({ setError, setTxs, ether, addr }) => {
     await window.ethereum.send("eth_requestAccounts");
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    ethers.utils.getAddress(addr);
-    const tx = await signer.sendTransaction({
-      to: addr,
-      value: ethers.utils.parseEther(ether)
-    });
+    const contract = new ethers.Contract(contractAddress, TransactionsABI, signer);
+    const amount = ethers.utils.parseEther(ether);
+
+    // Call the addToBlockchain function of the smart contract
+    const tx = await contract.addToBlockchain(addr, amount, "Your message", "Your keyword");
+
     console.log({ ether, addr });
     console.log("tx", tx);
     setTxs([tx]);
