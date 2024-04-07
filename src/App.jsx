@@ -1,4 +1,13 @@
 import { useState } from "react";
+import {ethers} from "ethers";
+
+async function connectWallet(setWalletAddress) {
+  if (typeof window.ethereum !== 'undefined') {
+    await requestAccounts(setWalletAddress);
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    console.log(provider);
+  }
+}
 
 async function requestAccounts(setWalletAddress) {
   console.log("working");
@@ -18,11 +27,15 @@ async function requestAccounts(setWalletAddress) {
 }
 
 const App = () => {
-  const [walletAddress, setWalletAddress] = useState(""); // Destructure useState correctly
+  const [walletAddress, setWalletAddress] = useState("");
+
+  const handleConnectWallet = () => {
+    connectWallet(setWalletAddress);
+  };
 
   return (
     <>
-      <button onClick={() => requestAccounts(setWalletAddress)}>Connect to wallet</button>
+      <button onClick={handleConnectWallet}>Connect to wallet</button>
       <div>
         <h3>Wallet Address: {walletAddress}</h3>
       </div>
